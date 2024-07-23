@@ -1,7 +1,9 @@
-package com.example.demo.repository;
+package com.example.restapi.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.example.demo.data.Inventory;
+
+import com.example.restapi.data.Inventory;
+
 import java.util.Optional;
 
 public interface InventoryRepository extends JpaRepository<Inventory, Integer> {

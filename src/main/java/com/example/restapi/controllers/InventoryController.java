@@ -1,4 +1,4 @@
-package com.example.demo.controllers;
+package com.example.restapi.controllers;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,8 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.data.Inventory;
-import com.example.demo.repository.InventoryRepository;
+import com.example.restapi.data.Inventory;
+import com.example.restapi.repository.InventoryRepository;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

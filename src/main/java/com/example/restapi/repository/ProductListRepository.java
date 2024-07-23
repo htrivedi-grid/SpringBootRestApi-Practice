@@ -1,7 +1,8 @@
-package com.example.demo.repository;
+package com.example.restapi.repository;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
-import com.example.demo.data.Product;
+
+import com.example.restapi.data.Product;
 
 public interface ProductListRepository extends PagingAndSortingRepository<Product, Integer> {
 

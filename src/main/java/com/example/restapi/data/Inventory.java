@@ -1,4 +1,4 @@
-package com.example.demo.data;
+package com.example.restapi.data;
 
 import jakarta.persistence.Id;
 import jakarta.persistence.Column;
@@ -7,13 +7,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
 @Entity
-public class Cart {
+public class Inventory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name = "user_id")
-    private Integer userId;
     @Column(name = "product_id")
     private Integer productId;
     private Integer quantity;
@@ -24,14 +22,6 @@ public class Cart {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
     }
 
     public Integer getProductId() {
@@ -52,7 +42,7 @@ public class Cart {
 
     @Override
     public String toString() {
-        return "Cart [id=" + id + ", userId=" + userId + ", productId=" + productId + ", quantity=" + quantity + "]";
+        return "Inventory [id=" + id + ", productId=" + productId + ", quantity=" + quantity + "]";
     }
 
 }

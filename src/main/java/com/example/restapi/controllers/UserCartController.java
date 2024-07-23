@@ -1,4 +1,4 @@
-package com.example.demo.controllers;
+package com.example.restapi.controllers;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.data.Cart;
-import com.example.demo.repository.CartRepository;
+import com.example.restapi.data.Cart;
+import com.example.restapi.repository.CartRepository;
 
 @RestController
 @RequestMapping("/cart")

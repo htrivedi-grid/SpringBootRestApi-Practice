@@ -1,4 +1,4 @@
-package com.example.demo.data;
+package com.example.restapi.data;
 
 import jakarta.persistence.Id;
 import jakarta.persistence.Entity;

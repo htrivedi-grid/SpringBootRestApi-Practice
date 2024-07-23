@@ -1,7 +1,8 @@
-package com.example.demo.repository;
+package com.example.restapi.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.example.demo.data.Product;
+
+import com.example.restapi.data.Product;
 
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
