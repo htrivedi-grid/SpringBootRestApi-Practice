@@ -5,12 +5,14 @@ public class UserEntity {
     private String email;
     private String password;
     private String token;
+    private String sessionId;
 
-    public UserEntity(String name, String email, String password, String token) {
+    public UserEntity(String name, String email, String password, String token, String sessionId) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.token = token;
+        this.sessionId = sessionId;
     }
 
     public String getName() {
@@ -43,6 +45,14 @@ public class UserEntity {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 
 }

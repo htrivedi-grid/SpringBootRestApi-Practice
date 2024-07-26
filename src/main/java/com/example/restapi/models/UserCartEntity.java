@@ -1,30 +1,12 @@
-package com.example.restapi.data;
+package com.example.restapi.models;
 
-import jakarta.persistence.Id;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import java.io.Serializable;
 
-@Entity
-public class Cart {
+public class UserCartEntity implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    @Column(name = "user_id")
     private Integer userId;
-    @Column(name = "product_id")
     private Integer productId;
     private Integer quantity;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
     public Integer getUserId() {
         return userId;
@@ -60,7 +42,7 @@ public class Cart {
 
     @Override
     public String toString() {
-        return "Cart [userId=" + userId + ", productId=" + productId + "]";
+        return "UserCartEntity [userId=" + userId + ", productId=" + productId + "]";
     }
 
 }
