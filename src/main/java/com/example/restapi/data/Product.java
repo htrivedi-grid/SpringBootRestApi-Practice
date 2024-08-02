@@ -14,6 +14,15 @@ public class Product {
     private String title;
     private Double price;
 
+    public Product() {
+    }
+
+    public Product(Integer id, String title, Double price) {
+        this.id = id;
+        this.title = title;
+        this.price = price;
+    }
+
     public Integer getId() {
         return id;
     }

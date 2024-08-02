@@ -40,9 +40,4 @@ public class Inventory {
         this.quantity = quantity;
     }
 
-    @Override
-    public String toString() {
-        return "Inventory [id=" + id + ", productId=" + productId + ", quantity=" + quantity + "]";
-    }
-
 }

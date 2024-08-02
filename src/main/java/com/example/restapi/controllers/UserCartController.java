@@ -36,9 +36,10 @@ public class UserCartController {
     public ResponseEntity<Object> getAllCartItems(@RequestParam(name = "user_id") String userId,
             HttpServletRequest request) {
         HttpSession session = request.getSession();
-        List<UserCartEntity> list = (List<UserCartEntity>) session.getAttribute(Constants.SESSION_CART_ATTRIBUTE);
-        if (list == null) {
-            list = new ArrayList<>();
+        List<UserCartEntity> list = getCartItemsFromSession(session);
+
+        if (!list.isEmpty()) {
+            list = cartService.getCartSummary(list);
         }
         session.setAttribute(Constants.SESSION_CART_ATTRIBUTE, list);
         return ResponseEntity.ok(list);
@@ -49,16 +50,23 @@ public class UserCartController {
     public ResponseEntity<Object> addItemToCart(@RequestBody UserCartEntity entity, HttpServletRequest request) {
         try {
             HttpSession session = request.getSession();
-            List<UserCartEntity> list = (List<UserCartEntity>) session.getAttribute(Constants.SESSION_CART_ATTRIBUTE);
-            if (list == null) {
-                list = new ArrayList<>();
-            }
-            Optional<UserCartEntity> cartItem = list.stream()
+            List<UserCartEntity> list = getCartItemsFromSession(session);
+            Optional<UserCartEntity> data = list.stream()
                     .filter(item -> item.getProductId().equals(entity.getProductId())).findFirst();
-            if (cartItem.isPresent())
-                cartItem.get().incrementQuantity();
-            else
-                list.add(entity);
+
+            if (data.isPresent()) {
+                UserCartEntity cartItem = data.get();
+                if (cartService.hasRequiredQuantity(cartItem.getProductId(),
+                        cartItem.getQuantity() + entity.getQuantity())) {
+                    cartItem.addQuantity(entity.getQuantity());
+                } else
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quanity is not allowed, out of limit");
+            } else {
+                if (cartService.hasRequiredQuantity(entity.getProductId(), entity.getQuantity())) {
+                    list.add(entity);
+                } else
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quanity is not allowed, out of limit");
+            }
             session.setAttribute(Constants.SESSION_CART_ATTRIBUTE, list);
             return ResponseEntity.ok().build();
         } catch (Exception exception) {
@@ -70,15 +78,15 @@ public class UserCartController {
     @SessionScope
     @DeleteMapping("/{product_id}")
     public ResponseEntity<Object> removeItemFromCart(@PathVariable(name = "product_id") String productId,
-            HttpServletRequest request) {
+            @RequestBody UserCartEntity entity, HttpServletRequest request) {
         try {
             HttpSession session = request.getSession();
-            List<UserCartEntity> list = (List<UserCartEntity>) session.getAttribute(Constants.SESSION_CART_ATTRIBUTE);
-            Optional<UserCartEntity> cartItem = list.stream()
+            List<UserCartEntity> list = getCartItemsFromSession(session);
+            Optional<UserCartEntity> data = list.stream()
                     .filter(item -> item.getProductId() == Integer.parseInt(productId)).findFirst();
-            if (cartItem.isPresent()) {
-                UserCartEntity carItemObj = cartItem.get();
-                carItemObj.decrementQuantity();
+            if (data.isPresent()) {
+                UserCartEntity carItemObj = data.get();
+                carItemObj.removeQuantity(entity.getQuantity());
                 if (carItemObj.getQuantity() == 0)
                     list.remove(carItemObj);
                 session.setAttribute(Constants.SESSION_CART_ATTRIBUTE, list);
@@ -89,5 +97,13 @@ public class UserCartController {
             exception.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+    }
+
+    private List<UserCartEntity> getCartItemsFromSession(HttpSession session) {
+        List<UserCartEntity> list = (List<UserCartEntity>) session.getAttribute(Constants.SESSION_CART_ATTRIBUTE);
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+        return list;
     }
 }

@@ -7,6 +7,7 @@ public class UserCartEntity implements Serializable {
     private Integer userId;
     private Integer productId;
     private Integer quantity;
+    private Double totalAmount;
 
     public Integer getUserId() {
         return userId;
@@ -32,12 +33,20 @@ public class UserCartEntity implements Serializable {
         this.quantity = quantity;
     }
 
-    public void incrementQuantity() {
-        this.quantity++;
+    public void addQuantity(Integer quantity) {
+        this.quantity += quantity;
     }
 
-    public void decrementQuantity() {
-        this.quantity--;
+    public void removeQuantity(Integer quantity) {
+        this.quantity -= quantity;
+    }
+
+    public Double getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(Double totalAmount) {
+        this.totalAmount = totalAmount;
     }
 
     @Override
