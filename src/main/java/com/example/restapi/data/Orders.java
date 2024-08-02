@@ -1,6 +1,10 @@
 package com.example.restapi.data;
 
 import jakarta.persistence.Id;
+
+import java.sql.Date;
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,6 +20,12 @@ public class Orders {
     private Integer userId;
     @Column(name = "total_amount")
     private Double totalAmount;
+    @Column(name = "created_date_time")
+    private Date createdDateTime;
+
+    public Orders() {
+        this.createdDateTime = Date.valueOf(LocalDate.now());
+    }
 
     public Integer getId() {
         return id;
@@ -41,6 +51,14 @@ public class Orders {
 
     public void setTotalAmount(Double totalAmount) {
         this.totalAmount = totalAmount;
+    }
+
+    public Date getCreatedDateTime() {
+        return createdDateTime;
+    }
+
+    public void setCreatedDateTime(Date createdDateTime) {
+        this.createdDateTime = createdDateTime;
     }
 
 }
