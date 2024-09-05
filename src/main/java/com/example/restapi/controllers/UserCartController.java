@@ -2,7 +2,6 @@ package com.example.restapi.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.annotation.SessionScope;
 
+import com.example.restapi.exception.BadRequestException;
+import com.example.restapi.exception.ResourceNotFoundException;
 import com.example.restapi.models.Constants;
 import com.example.restapi.models.UserCartEntity;
 import com.example.restapi.services.UserCartService;
@@ -33,7 +34,7 @@ public class UserCartController {
 
     @SessionScope
     @GetMapping()
-    public ResponseEntity<Object> getAllCartItems(@RequestParam(name = "user_id") String userId,
+    public ResponseEntity<List<UserCartEntity>> getAllCartItems(@RequestParam(name = "user_id") String userId,
             HttpServletRequest request) {
         HttpSession session = request.getSession();
         List<UserCartEntity> list = getCartItemsFromSession(session);
@@ -47,56 +48,31 @@ public class UserCartController {
 
     @SessionScope
     @PostMapping()
-    public ResponseEntity<Object> addItemToCart(@RequestBody UserCartEntity entity, HttpServletRequest request) {
-        try {
-            HttpSession session = request.getSession();
-            List<UserCartEntity> list = getCartItemsFromSession(session);
-            Optional<UserCartEntity> data = list.stream()
-                    .filter(item -> item.getProductId().equals(entity.getProductId())).findFirst();
+    public ResponseEntity<HttpStatus> addItemToCart(@RequestBody UserCartEntity entity, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        List<UserCartEntity> list = getCartItemsFromSession(session);
 
-            if (data.isPresent()) {
-                UserCartEntity cartItem = data.get();
-                if (cartService.hasRequiredQuantity(cartItem.getProductId(),
-                        cartItem.getQuantity() + entity.getQuantity())) {
-                    cartItem.addQuantity(entity.getQuantity());
-                } else
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quanity is not allowed, out of limit");
-            } else {
-                if (cartService.hasRequiredQuantity(entity.getProductId(), entity.getQuantity())) {
-                    list.add(entity);
-                } else
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quanity is not allowed, out of limit");
-            }
-            session.setAttribute(Constants.SESSION_CART_ATTRIBUTE, list);
-            return ResponseEntity.ok().build();
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        boolean updateQuantitySuccess = cartService.addCartItemQuantity(list, entity);
+        if (!updateQuantitySuccess)
+            throw new BadRequestException("Quanity is not allowed, out of stock");
+
+        session.setAttribute(Constants.SESSION_CART_ATTRIBUTE, list);
+        return ResponseEntity.ok().build();
     }
 
     @SessionScope
     @DeleteMapping("/{product_id}")
-    public ResponseEntity<Object> removeItemFromCart(@PathVariable(name = "product_id") String productId,
+    public ResponseEntity<HttpStatus> removeItemFromCart(@PathVariable(name = "product_id") String productId,
             @RequestBody UserCartEntity entity, HttpServletRequest request) {
-        try {
-            HttpSession session = request.getSession();
-            List<UserCartEntity> list = getCartItemsFromSession(session);
-            Optional<UserCartEntity> data = list.stream()
-                    .filter(item -> item.getProductId() == Integer.parseInt(productId)).findFirst();
-            if (data.isPresent()) {
-                UserCartEntity carItemObj = data.get();
-                carItemObj.removeQuantity(entity.getQuantity());
-                if (carItemObj.getQuantity() == 0)
-                    list.remove(carItemObj);
-                session.setAttribute(Constants.SESSION_CART_ATTRIBUTE, list);
-                return ResponseEntity.ok().build();
-            } else
-                return ResponseEntity.notFound().build();
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        HttpSession session = request.getSession();
+        List<UserCartEntity> list = getCartItemsFromSession(session);
+
+        boolean updateQuantitySuccess = cartService.removeCartItemQuantity(productId, list, entity);
+        if (!updateQuantitySuccess)
+            throw new ResourceNotFoundException("Item not present in the cart");
+
+        session.setAttribute(Constants.SESSION_CART_ATTRIBUTE, list);
+        return ResponseEntity.ok().build();
     }
 
     private List<UserCartEntity> getCartItemsFromSession(HttpSession session) {

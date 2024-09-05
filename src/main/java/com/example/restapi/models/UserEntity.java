@@ -7,12 +7,11 @@ public class UserEntity {
     private String token;
     private String sessionId;
 
-    public UserEntity(String name, String email, String password, String token, String sessionId) {
+    public UserEntity(String name, String email, String password, String token) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.token = token;
-        this.sessionId = sessionId;
     }
 
     public String getName() {
